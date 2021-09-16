@@ -28,6 +28,41 @@ public extension StoreApp
     static let dolphinAppID = "me.oatmealdome.dolphinios-njb"
 }
 
+@objc
+public enum Platform: UInt {
+    case ios
+    case tvos
+    case macos
+}
+
+@objc
+public class PlatformURL: NSManagedObject, Decodable {
+    /* Properties */
+    @NSManaged public private(set) var platform: Platform
+    @NSManaged public private(set) var downloadURL: URL
+}
+
+extension PlatformURL: Comparable {
+    static func < (lhs: Self, rhs: Self) -> Bool {
+        return lhs.platform.rawValue < rhs.platform.rawValue
+    }
+    
+    static func > (lhs: Self, rhs: Self) -> Bool {
+        return lhs.platform.rawValue > rhs.platform.rawValue
+    }
+    
+    static func <= (lhs: Self, rhs: Self) -> Bool {
+        return lhs.platform.rawValue <= rhs.platform.rawValue
+    }
+    
+    static func >= (lhs: Self, rhs: Self) -> Bool {
+        return lhs.platform.rawValue >= rhs.platform.rawValue
+    }
+}
+
+@objc
+public typealias PlatformURLs = [PlatformURL]
+
 @objc(StoreApp)
 public class StoreApp: NSManagedObject, Decodable, Fetchable
 {
@@ -48,6 +83,8 @@ public class StoreApp: NSManagedObject, Decodable, Fetchable
     @NSManaged public private(set) var versionDescription: String?
     
     @NSManaged public private(set) var downloadURL: URL
+    @NSManaged public private(set) var platformURLs: PlatformURLs?
+
     @NSManaged public private(set) var tintColor: UIColor?
     @NSManaged public private(set) var isBeta: Bool
     
@@ -93,6 +130,7 @@ public class StoreApp: NSManagedObject, Decodable, Fetchable
         case iconURL
         case screenshotURLs
         case downloadURL
+        case downloadURLs
         case tintColor
         case subtitle
         case permissions
@@ -124,7 +162,18 @@ public class StoreApp: NSManagedObject, Decodable, Fetchable
             self.iconURL = try container.decode(URL.self, forKey: .iconURL)
             self.screenshotURLs = try container.decodeIfPresent([URL].self, forKey: .screenshotURLs) ?? []
             
-            self.downloadURL = try container.decode(URL.self, forKey: .downloadURL)
+            let downloadURL = try container.decodeIfPresent(URL.self, forKey: .downloadURL)
+            let platformURLs = try container.decodeIfPresent(PlatformURLs.self.self, forKey: .downloadURLs)
+            if let platformURLs = platformURLs {
+                self.platformURLs = platformURLs
+                // Backwards compatibility, use the fiirst (iOS will be first since sorted that way)
+                self.downloadURL = downloadURLs.sorted().first()
+                    
+            } else if let downloadURL = downloadURL {
+                self.downloadURL = downloadURL
+            } else {
+                throw DecodingError.dataCorruptedError(forKey: .downloadURL, in: container, debugDescription: "E downloadURL:String or downloadURLs:[[Platform:URL]] key required.")
+            }
             
             if let tintColorHex = try container.decodeIfPresent(String.self, forKey: .tintColor)
             {
