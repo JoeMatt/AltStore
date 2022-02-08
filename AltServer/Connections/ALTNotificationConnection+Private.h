@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ALTNotificationConnection ()
 
-@property (nonatomic, readonly) np_client_t client;
+@property (nonatomic, readonly, nullable) np_client_t client;
 
 - (instancetype)initWithDevice:(ALTDevice *)device client:(np_client_t)client;
 
