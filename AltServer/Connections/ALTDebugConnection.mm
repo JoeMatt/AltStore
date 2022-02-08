@@ -115,7 +115,9 @@ char *bin2hex(const unsigned char *bin, size_t length)
         
         if (processName)
         {
-            NSString *encodedName = @(bin2hex((const unsigned char *)processName.UTF8String, (size_t)strlen(processName.UTF8String)));
+            char * hex = bin2hex((const unsigned char *)processName.UTF8String, (size_t)strlen(processName.UTF8String));
+            NSString *encodedName = @(hex);
+            free(hex);
             attachCommand = [NSString stringWithFormat:@"vAttachOrWait;%@", encodedName];
         }
         else
@@ -123,7 +125,9 @@ char *bin2hex(const unsigned char *bin, size_t length)
             // Convert to Big-endian.
             int32_t rawPID = CFSwapInt32HostToBig(pid);
             
-            NSString *encodedName = @(bin2hex((const unsigned char *)&rawPID, 4));
+            char * hex = bin2hex((const unsigned char *)&rawPID, 4);
+            NSString *encodedName = @(hex);
+            free(hex);
             attachCommand = [NSString stringWithFormat:@"vAttach;%@", encodedName];
         }
         
