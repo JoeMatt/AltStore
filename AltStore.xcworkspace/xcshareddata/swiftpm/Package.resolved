@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/microsoft/appcenter-sdk-apple.git",
         "state": {
           "branch": null,
-          "revision": "25f64229373de97ff3920941cd52203193e5d8be",
-          "version": "4.3.0"
+          "revision": "b84bc8a39ff04bc8d5ae7b4d230c171c562891aa",
+          "version": "4.4.1"
         }
       },
       {
@@ -60,7 +60,7 @@
         "repositoryURL": "https://github.com/JoeMatt/STPrivilegedTask.git",
         "state": {
           "branch": "master",
-          "revision": "baa9a8b6b2ea146e1ec5c2b2df6a56ea5189d606",
+          "revision": "10a9150ef32d444af326beba76356ae9af95a3e7",
           "version": null
         }
       }
